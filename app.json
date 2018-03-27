@@ -1,0 +1,15 @@
+{
+    "name": "Slack Dicebot",
+    "description": "A simple dicebot for Slack. Allows for dice rolling with /roll chat command.",
+    "repository": "https://github.com/plumbis/slack-dicebot",
+    "env": {
+        "SLACK_SUBDOMAIN": {
+            "description": "Your slack subdomain. <blah>.slack.com",
+            "required": true
+        },
+        "SLACK_WEBHOOK_URL": {
+            "description": "The Slack Webhook URL provided by slack within the Incoming WebHook configuration on slack",
+            "required": true
+        }
+    }
+}

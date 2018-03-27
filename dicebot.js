@@ -5,17 +5,27 @@ module.exports = function (req, res, next) {
   var matches;
   var times = 2;
   var die = 6;
+  var modifier = "+";
+  var modifier_value = 0;
   var rolls = [];
   var total = 0;
   var botPayload = {};
 
   if (req.body.text) {
     // parse roll type if specified
-    matches = req.body.text.match(/^(\d{1,2})d(\d{1,2})$/);
+    matches = req.body.text.match(/^(\d{1,2})d(\d{1,2})($|\s*(\+|\-)(\d{1,2})$)/);
+    //matches = req.body.text.match(/^(\d{1,2})d(\d{1,2})$/);
+    console.log(matches);
 
     if (matches && matches[1] && matches[2]) {
       times = matches[1];
       die = matches[2];
+      if (matches[3]){
+        modifier = matches[4];
+        modifier_value = Number(matches[5]);
+        console.log(matches[4]);
+        console.log(matches[5]);
+      }
 
     } else {
       // send error message back to user if input is bad
@@ -31,9 +41,24 @@ module.exports = function (req, res, next) {
   }
 
   // write response message and add to payload
-  botPayload.text = req.body.user_name + ' rolled ' + times + 'd' + die + ':\n' +
-                    rolls.join(' + ') + ' = *' + total + '*';
+  if (modifier_value){
+    if (modifier == '+'){
+      total = total + modifier_value;
+      console.log(total)
+    }
 
+    else if(modifier == '-'){
+      total = total - modifier_value;
+      console.log(total)
+    }
+
+    botPayload.text = req.body.user_name + ' rolled ' + times + 'd' + die + ':\n' +
+                      rolls.join(' + ') + ' (' + modifier + modifier_value + ') = *' + total + '*';
+  } 
+  else {
+    botPayload.text = req.body.user_name + ' rolled ' + times + 'd' + die + ':\n' +
+                      rolls.join(' + ') + ' = *' + total + '*';
+  }
   botPayload.username = 'dicebot';
   botPayload.channel = req.body.channel_id;
   botPayload.icon_emoji = ':game_die:';
@@ -61,8 +86,8 @@ function roll (min, max) {
 
 function send (payload, callback) {
   var path = process.env.INCOMING_WEBHOOK_PATH;
-  var uri = 'https://hooks.slack.com/services' + path;
-
+  var uri = process.env.SLACK_WEBHOOK_URL;
+ 
   request({
     uri: uri,
     method: 'POST',

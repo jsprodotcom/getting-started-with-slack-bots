@@ -1,7 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var hellobot = require('./hellobot');
 var dicebot = require('./dicebot');
+var who = require('./whobot');
 
 var app = express();
 var port = process.env.PORT || 3000;
@@ -11,13 +11,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 // test route
-app.get('/', function (req, res) { res.status(200).send('Hello world!') });
-
-// hellobot
-app.post('/hello', hellobot);
+app.get('/', function (req, res) { res.status(200).send('Go away') });
 
 // dicebot
 app.post('/roll', dicebot);
+app.post('/who', who);
 
 
 // basic error handler
